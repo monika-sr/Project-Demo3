@@ -1,0 +1,109 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "value": "fng-dtf-acrp-dev"
+        },
+        "RestService_CostManagement_properties_typeProperties_url": {
+            "value": "https://management.azure.com"
+        },
+        "AzureDataLakeStorage_actsadlsg2_properties_typeProperties_url": {
+            "value": "https://fngsaacrpdev.dfs.core.windows.net"
+        },
+        "ISFRatio_properties_typeProperties_url": {
+            "value": "https://isfratio.blob.core.windows.net/"
+        },
+        "RestResource_BillingSummary_properties_typeProperties_url": {
+            "value": "https://consumption.azure.com/"
+        },
+        "AzureKeyVault1_properties_typeProperties_baseUrl": {
+            "value": "https://kv-acrp-dev.vault.azure.net/"
+        },
+        "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_endpoint": {
+            "value": "https://fngadxacrpdev.eastus2.kusto.windows.net"
+        },
+        "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_database": {
+            "value": "CostAnalysis"
+        },
+        "Dev_OR_SandBox_properties_typeProperties_url": {
+            "value": "https://fngsaacrpdev.dfs.core.windows.net"
+        },
+        "SFTP_properties_typeProperties_host": {
+            "value": "filetransfer.fnf.com"
+        },
+        "SFTP_properties_typeProperties_userName": {
+            "value": "azcostrep-np-sftp"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_url": {
+            "value": "https://management.azure.com"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_servicePrincipalId": {
+            "value": "11fcdb21-0cd8-43f0-99cf-849ffedc9a3b"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_tenant": {
+            "value": "2129e8df-927d-4b1f-a761-d556b735c8c0"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_aadResourceId": {
+            "value": "https://management.azure.com"
+        },
+        "RetailPrices_properties_typeProperties_url": {
+            "value": "https://prices.azure.com/api/retail/prices"
+        },
+        "RetailPrices_properties_typeProperties_servicePrincipalId": {
+            "value": "11fcdb21-0cd8-43f0-99cf-849ffedc9a3b"
+        },
+        "RetailPrices_properties_typeProperties_tenant": {
+            "value": "2129e8df-927d-4b1f-a761-d556b735c8c0"
+        },
+        "RetailPrices_properties_typeProperties_aadResourceId": {
+            "value": "https://prices.azure.com/api/retail/prices"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_LookBackInDay": {
+            "value": "3"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_BillingIds": {
+            "value": [
+                {
+                    "BillingID": "46132814",
+                    "KeyVaultURLForAPIKey": "https://kv-acrp-dev.vault.azure.net/secrets/APIKey-46132814/997864aa1b904061bd8a229e52b56ea4"
+                }
+            ]
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_containername": {
+            "value": "azure-cost-metric-data"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_BeginDate": {
+            "value": "NA"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_EndDate": {
+            "value": "NA"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_BatchType": {
+            "value": "Batch"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_LookBackInDay": {
+            "value": "3"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_BillingIds": {
+            "value": [
+                {
+                    "BillingID": "46132814",
+                    "KeyVaultURLForAPIKey": "https://kv-acrp-dev.vault.azure.net/secrets/APIKey-46132814/997864aa1b904061bd8a229e52b56ea4"
+                }
+            ]
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_containername": {
+            "value": "azure-cost-metric-data"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_BeginDate": {
+            "value": "NA"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_EndDate": {
+            "value": "NA"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_BatchType": {
+            "value": "Daily"
+        }
+    }
+}
