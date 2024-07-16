@@ -1,0 +1,833 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "fng-dtf-acrp-dev"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/DevDataSet_DataCopy')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Dev_OR_SandBox",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "container": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "DataCopy"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileSystem": {
+                            "value": "@dataset().container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RestResource_Subscriptions')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RestService_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_relativeURL": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().p_relativeURL",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RestResource_VMMetrics_v1')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RestService_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_RelativeURL": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().p_RelativeURL",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ADX_ExcelSource')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string",
+                        "defaultValue": "costoptimization"
+                    },
+                    "FileName": {
+                        "type": "string",
+                        "defaultValue": "ProductMeterCategory.xlsx"
+                    },
+                    "WorkSheetName": {
+                        "type": "string",
+                        "defaultValue": "ProductMeterCategory"
+                    }
+                },
+                "folder": {
+                    "name": "FNFI_Billing"
+                },
+                "annotations": [],
+                "type": "Excel",
+                "typeProperties": {
+                    "sheetName": {
+                        "value": "@dataset().WorkSheetName",
+                        "type": "Expression"
+                    },
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "container": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "firstRowAsHeader": true
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/VMMetricsJSON_UnitTest')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": "DevTest",
+                        "fileSystem": "metricsdata"
+                    }
+                },
+                "schema": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_BillingDataCSV')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "ContainerName": {
+                        "type": "string"
+                    },
+                    "DirectoryName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "*",
+                        "folderPath": {
+                            "value": "@dataset().DirectoryName",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().ContainerName",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_BillingDataTSV')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "ContainerName": {
+                        "type": "string"
+                    },
+                    "DirectoryName": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().DirectoryName",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().ContainerName",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "",
+                    "firstRowAsHeader": true,
+                    "quoteChar": ""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/BillingSummary')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "FilePath": {
+                        "type": "string"
+                    },
+                    "container": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FilePath",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().container",
+                            "type": "Expression"
+                        }
+                    }
+                },
+                "schema": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ITSMOCostsMapping')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "CostMappingFileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().CostMappingFileName",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "referencedata"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "ResourceGroupFQN",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SubscritionName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "SubscritionGuid",
+                        "type": "String"
+                    },
+                    {
+                        "name": "ResourceGroupName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "HostingService",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AppCode1",
+                        "type": "String"
+                    },
+                    {
+                        "name": "AppName",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CostCenter",
+                        "type": "String"
+                    },
+                    {
+                        "name": "LineOfBusiness",
+                        "type": "String"
+                    },
+                    {
+                        "name": "MigrationStatus",
+                        "type": "String"
+                    },
+                    {
+                        "name": "CoreSubscription",
+                        "type": "String"
+                    },
+                    {
+                        "name": "PrevFISSpend",
+                        "type": "String"
+                    },
+                    {
+                        "name": "IsApplication",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/VMMetricsJSON_v3')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "dirname": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "json/@{dataset().dirname}",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "metricsdata"
+                    }
+                },
+                "schema": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/VirtualMachines_RESTOutput')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "VM",
+                        "fileSystem": "config"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "location",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/src_BillingDataTSV_Marketplace')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "ContainerName": {
+                        "type": "string"
+                    },
+                    "DirectoryName": {
+                        "type": "string"
+                    },
+                    "FileName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().DirectoryName",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().ContainerName",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": "\t",
+                    "escapeChar": "\"",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/VMMetricsCSV')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "dirname": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "folderPath": {
+                            "value": "@dataset().dirname",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "metricsdata"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/DestinationDataset_DataCopy')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "container": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "DataCopy"
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileSystem": {
+                            "value": "@dataset().container",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/BillingDataCSV')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "sink_filename": {
+                        "type": "string"
+                    },
+                    "dir_name": {
+                        "type": "string"
+                    },
+                    "container_name": {
+                        "type": "string",
+                        "defaultValue": "billingdata"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().sink_filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().dir_name",
+                            "type": "Expression"
+                        },
+                        "fileSystem": {
+                            "value": "@dataset().container_name",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/VMMetricsData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "vmusagemetrics.csv",
+                        "fileSystem": "metricsdata"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/BillingData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "sink_filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().sink_filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": "DevTest",
+                        "fileSystem": "billingdata"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/VMMetricsJSON_v4')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "dirname": {
+                        "type": "string"
+                    },
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "json/@{dataset().dirname}",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "metricsdata"
+                    }
+                },
+                "schema": {}
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CSVText')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FNFI_Billing"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "folderPath": {
+                            "value": "@dataset().directory",
+                            "type": "Expression"
+                        },
+                        "container": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\"",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/VirtualMachines_RESTOutput_JSON')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "Json",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "APIVMList.json",
+                        "folderPath": "VM",
+                        "fileSystem": "config"
+                    }
+                },
+                "schema": {}
+            },
+            "dependsOn": []
+        }
+    ]
+}

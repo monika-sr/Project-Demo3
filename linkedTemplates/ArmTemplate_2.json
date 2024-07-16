@@ -1,0 +1,878 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "fng-dtf-acrp-dev"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/FolderValidation')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "FilePath": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "Binary",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileSystem": {
+                            "value": "@dataset().FilePath",
+                            "type": "Expression"
+                        }
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adx_VMMetrics')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "tablename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": {
+                        "value": "@dataset().tablename",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adx_BillingData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "TableName": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": {
+                        "value": "@dataset().TableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/CSVText_referencedata')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FNFI_Billing"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobStorageLocation",
+                        "fileName": {
+                            "value": "@dataset().directory",
+                            "type": "Expression"
+                        },
+                        "container": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\"",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ADX_Generic')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "TableName": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": {
+                        "value": "@dataset().TableName",
+                        "type": "Expression"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adx_BillingConfig')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": "BillingConfig"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adx_Subscriptions')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": "APISubscriptionList"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adx_Staging_BillingConfig')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": "Staging_BillingConfig"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adx_SubscriptionTags')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": "Staging_SubscriptionTags"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/adx_APIVMList')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "AzureDataExplorerTable",
+                "schema": [],
+                "typeProperties": {
+                    "table": "APIVMList"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RefershPBITable_Original')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Billing_Config_Extended",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace BillingConfig_Extended <|\nlet UnDefined = 'undefined';\nlet System = 'system';\nlet Subscription = materialize(\nBillingData\n| project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup)\n| distinct subscriptionId, resourceGroup\n| sort by subscriptionId asc, resourceGroup asc\n| extend PK_Subscription= row_number()\n| project subscriptionId, resourceGroup,PK_Subscription\n);\nlet SubscriptionName = materialize(BillingData \n| summarize arg_max(billingDate,subscriptionName, billingAccountId, billingAccountName, accountName, accountOwnerId) by subscriptionId \n| project-away billingDate);\nlet ResourceTag = materialize (BillingData\n| where billingDate > ago(180d)\n| where isnotempty(tags)\n| extend RGFQN = strcat(subscriptionId,'/',resourceGroup)\n| summarize arg_max(billingDate, subscriptionId, resourceGroup) by RGFQN, tags\n| extend tag = parse_json(tags)\n| project RGFQN,subscriptionId, resourceGroup, costcenter=tostring(tag.cost_center), servicetowerid=tostring(tag.servicetowerid), appcode=tostring(tag.app_code1), \nappid=tostring(tag.app_id), parent_hostingid=tostring(tag.parent_hostingid), lineofbusiness=tostring(tag.lineofbusinessid),financelob=tostring(tag.financelob), billingDate\n| extend appcodeparsed=split(appcode, '|')[0]\n| extend appcode=tolong(appcodeparsed), parent_hostingid=toreal(parent_hostingid), lineofbusiness=toint(lineofbusiness), financelob=toint(financelob) \n| project-away appcodeparsed\n| where isnotempty(costcenter) and isnotnull(appcode) and isnotempty(appid) and isnotnull(parent_hostingid) and isnotnull(lineofbusiness) and isnotnull(financelob)\n| extend lineofbusiness=tostring(lineofbusiness), financelob=tostring(financelob)\n| extend financelob=iif(isempty(financelob),UnDefined,financelob)\n| summarize Max_BillingDate=max(billingDate) by costcenter, servicetowerid, appcode, appid, parent_hostingid,lineofbusiness,financelob,subscriptionId, resourceGroup,RGFQN\n| sort by RGFQN, Max_BillingDate, lineofbusiness, appcode, appid, parent_hostingid, servicetowerid, costcenter,financelob desc\n| extend Rank=row_number(1, prev(RGFQN) != RGFQN)\n| where Rank ==  1\n| join kind=inner HostingLKP on $left.parent_hostingid == $right.ParentHostingSubHostingID\n| join kind=inner LOB on $left.lineofbusiness==$right.ID\n| project Environment=tolower(SubHostingServiceName), AppCode = tostring(appcode), AppName = appid, LineOfBusiness = ShortName, IsApplication = iif(isnotempty(servicetowerid),false, true), subscriptionId, resourceGroup,financelob, Source = 'ResourceTag'\n);\nlet BillingConfigView = materialize(\n        BillingConfig\n    | project subscriptionId=tostring(SubscriptionGuid), \n    Environment= iif(isempty(HostingService),UnDefined,HostingService),\n    AppCode = iif(isempty(AppCode1),UnDefined,AppCode1),\n    AppName = iif(isempty(AppName),UnDefined,AppName),\n    resourceGroup=iff(isempty(ResourceGroupName),System, ResourceGroupName),\n    LineOfBusiness=iif(LineOfBusiness=='#n/a',UnDefined,LineOfBusiness),\n    financelob=iif(isempty(FinanceLOB),UnDefined,FinanceLOB),\n    IsApplication,\n    Source=\"Config\"\n    | distinct Environment,AppCode,AppName,LineOfBusiness,IsApplication,subscriptionId, resourceGroup,financelob,Source\n);\nlet TagandConfig = materialize(ResourceTag\n| union (\n    BillingConfigView | join kind=leftanti ResourceTag on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n));\nTagandConfig\n| union (\n    BillingData | distinct subscriptionId, resourceGroup\n    | extend resourceGroup=iff(isempty(resourceGroup),System,resourceGroup)\n    | join kind=leftanti TagandConfig on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n    | project Environment=UnDefined,AppCode=UnDefined,AppName=UnDefined,LineOfBusiness=UnDefined,IsApplication=true, subscriptionId, resourceGroup,financelob=UnDefined,Source='Usage'\n)\n| join kind=inner Subscription on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n| join kind=inner SubscriptionName on $left.subscriptionId == $right.subscriptionId\n| join kind=leftouter LOB on $left.LineOfBusiness==$right.ShortName\n| project Environment, AppCode, AppName, LineOfBusiness=iff(isempty(FullName),UnDefined,FullName), IsApplication, PK_Subscription=tostring(PK_Subscription), resourceGroup, subscriptionId, subscriptionName, billingAccountId, billingAccountName, accountName, accountOwnerId,Source,LOB_ShortName=iff(isempty(ShortName),UnDefined,ShortName),financelob",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "00:20:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "PBIQuery_Aggregated",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [
+                            {
+                                "activity": "ProductDetail",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace Billing_PBI <| \nlet UnDefined = 'undefined';\nlet System = 'system';\n//let EndOfLastWeek = startofweek(now());\nlet EndOfLastWeek = now();\nlet DateFilter = ago(1000d);\nlet Daytogroup = (_billingdate:datetime) {\n    let _endOfWeek = iif(dayofweek(_billingdate)==0d,_billingdate, todatetime(format_datetime(datetime_add('Day', 1, endofweek(_billingdate)),\"yyyy-MM-dd\")));\n    let _endOfWeekByMonth = iif(_endOfWeek > endofmonth(_billingdate),todatetime(format_datetime(endofmonth(_billingdate),\"yyyy-MM-dd\")),_endOfWeek);\n    _endOfWeekByMonth\n};\nlet BillingDataView = materialize(\nBillingConfig_Extended\n| join kind= inner (BillingData\n| where billingDate > DateFilter and billingDate <= EndOfLastWeek\n| extend subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),\nproduct,location=resourceLocation,\nBillingDate_T = Daytogroup(billingDate)\n| project subscriptionId,resourceGroup,product,location,BillingDate_T,billingDate,chargeType, frequency,resourceId,cost,quantity, effectivePrice, resourceName,publisherType,partNumber\n) on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n| project subscriptionId,resourceGroup,product,location,BillingDate_T,billingDate,chargeType, frequency,resourceId,cost,quantity, effectivePrice, resourceName,publisherType,partNumber,PK_Subscription\n);\nProductDetail\n| join kind=inner BillingDataView\non $left.Product == $right.product and $left.partNumber == $right.partNumber\n| extend billingDate_W = iif(billingDate > startofmonth(ago(60d)),billingDate,iif(billingDate < endofmonth(ago(560d)),todatetime(format_datetime(endofmonth(billingDate),\"yyyy-MM-dd\")),BillingDate_T)), //up to 60 days daily, upto 560 days weekly rest monthly\nreservationId=iif(chargeType==\"purchase\" and frequency==\"recurring\", split(resourceId, '/')[4], \"\")\n| summarize hint.strategy = shuffle TotalCost = sum(cost), Quantity = sum(quantity), effectivePrice=avg(effectivePrice) by Region=location,  \n BillingDate = billingDate_W ,PK_Subscription,resourceName,publisherType,chargeType,reservationId, ProdID",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "02:00:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ProductDetail",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [
+                            {
+                                "activity": "Billing_Config_Extended",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace ProductDetail <| \nlet UnDefined = 'undefined';\nlet BillingDataView = materialize(\nBillingData\n| extend mde = parse_json(meterDetails)\n| project Product=product, partNumber, metername = tostring(mde.metername),\nMeterCategory=tostring(mde.metercategory),metersubcategory=tostring(mde.metersubcategory),\nunitofmeasure=tostring(mde.unitofmeasure)\n| distinct Product, partNumber, MeterCategory\n);\nProductMeterCategory\n| project IsPrePay,Product,FNFCategory,CostType\n| join kind=rightouter BillingDataView\non Product\n| extend MeterCategory=iif(isempty( MeterCategory),UnDefined,MeterCategory),\nFNFCategory=iif(isempty( FNFCategory),UnDefined,FNFCategory),\nCostType = iif(isempty(CostType),UnDefined,CostType),\nIsPrePay=iif(isnull(IsPrePay),false, IsPrePay),Product=Product1\n| distinct Product,partNumber,IsPrePay,MeterCategory,FNFCategory,CostType\n| sort by Product, partNumber asc\n| extend ProdID=row_number()\n| project Product,partNumber,NonReserved=IsPrePay,MeterCategory,FNFCategory,CostType,ProdID",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "00:20:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Billing"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-01-05T11:08:25Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RefershPBITable')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Billing_Config_Extended",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace BillingConfig_Extended <|  \nlet UnDefined = 'undefined';\nlet System = 'system';\nlet Subscription = materialize(\nBillingData\n| project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName\n| distinct subscriptionId, resourceGroup,resourceName\n| sort by subscriptionId asc, resourceGroup asc,resourceName asc\n| extend PK_Subscription= row_number()\n| project subscriptionId, resourceGroup,resourceName,PK_Subscription //,PK_Subscription_RG\n);\nlet Subscription_RG = materialize(\nBillingData\n| project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup)\n| distinct subscriptionId, resourceGroup\n| sort by subscriptionId asc, resourceGroup asc\n| extend PK_Subscription_RG= row_number()\n| project subscriptionId, resourceGroup,PK_Subscription_RG\n);\nlet SubscriptionName = materialize(BillingData \n| summarize arg_max(billingDate,subscriptionName, billingAccountId, billingAccountName, accountName, accountOwnerId) by subscriptionId \n| project-away billingDate);\nlet ResourceTag = materialize (BillingData\n| where billingDate > ago(180d)\n| where isnotempty(tags)\n| extend RGFQN = strcat(subscriptionId,'/',resourceGroup,'/',resourceName)\n| summarize arg_max(billingDate, subscriptionId, resourceGroup,resourceName) by RGFQN, tags\n| extend tag = parse_json(tags)\n| project RGFQN,subscriptionId, resourceGroup,resourceName,environment=tostring(coalesce(tag.env,tag.environment)),application_name=tostring(coalesce(tag.app1,tag.application)), application_name_2=tostring(tag.app2),primary_app_owner=tostring(tag.owner1),backup_app_owner=tostring(tag.owner2),busines_unit=tostring(tag.bu),budget_center_code=tostring(tag.bc),public_or_private=tostring(tag.public),creator_name=tostring(tag.createdby),ticket_number=tostring(tag.requestid),date_created=tostring(tag.datecreated),expiraton_date=tostring(tag.expiratondate),billingDate,tags\n//| extend appcodeparsed=split(appcode, '|')[0]\n//| extend appcode=tolong(appcodeparsed), parent_hostingid=toreal(parent_hostingid), lineofbusiness=toint(lineofbusiness)//, financelob=toint(financelob) \n//| project-away appcodeparsed\n//| extend lineofbusiness=tostring(lineofbusiness), financelob=tostring(financelob)\n//| extend financelob=iif(isempty(financelob),UnDefined,financelob)\n| where isnotempty(busines_unit)\n| summarize Max_BillingDate=max(billingDate) by RGFQN,subscriptionId, resourceGroup,resourceName,environment,application_name,application_name_2,primary_app_owner,backup_app_owner,busines_unit,budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags\n//costcenter, servicetowerid, appcode,appcode_2, appid, parent_hostingid,lineofbusiness,financelob,subscriptionId, resourceGroup,resourceName,RGFQN,businessservice, clientservice,resourceretention,ritm,requestor_email,creator_name,subnet,subnet2,subnet3,subnet4,subnetaks,subnetapim,subnetag,subnetalb,subnetams,tags\n| sort by RGFQN, Max_BillingDate, subscriptionId, resourceGroup,resourceName,environment,application_name,application_name_2,primary_app_owner,backup_app_owner,busines_unit,budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags desc\n//| sort by RGFQN, Max_BillingDate, lineofbusiness, appcode,appcode_2, appid, parent_hostingid, servicetowerid, costcenter,financelob,businessservice, clientservice,resourceretention,ritm,requestor_email,creator_name,subnet,subnet2,subnet3,subnet4,subnetaks,subnetapim,subnetag,subnetalb,subnetams,tags desc\n| extend Rank=row_number(1, prev(RGFQN) != RGFQN)\n| where Rank ==  1\n//| join kind=leftouter HostingLKP_Ram on $left.parent_hostingid == $right.ParentHostingSubHostingID\n| join kind=leftouter LOB on $left.busines_unit==$right.FullName\n| project Environment=tolower(environment),subscriptionId, resourceGroup,resourceName,environment,application_name,application_name_2,primary_app_owner,backup_app_owner,busines_unit,budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags,Source = 'ResourceTag'\n//, AppCode = tostring(appcode),AppCode2 = tostring(appcode_2), AppName = appid, LineOfBusiness = ShortName, IsApplication = iif(isnotempty(servicetowerid),false, true),\n//costcenter, servicetowerid,subscriptionId, resourceGroup,resourceName,financelob,businessservice, clientservice,resourceretention,ritm,requestor_email,creator_name,subnet,subnet2,subnet3,subnet4,subnetaks,subnetapim,subnetag,subnetalb,subnetams,tags,Source = 'ResourceTag'\n);\nlet BillingConfigView = materialize(\n    BillingConfig\n    | project subscriptionId=tostring(SubscriptionGuid), \n    Environment= iif(isempty(Environment),UnDefined,Environment),\n    application_name = iif(isempty(App1),UnDefined,App1),\n    application_name_2 = iif(isempty(App2),UnDefined,App2),\n    resourceGroup=iff(isempty(ResourceGroupName),System, ResourceGroupName),\n    budget_center_code=iff(isempty(BudgetCenter),UnDefined, BudgetCenter),\n    busines_unit=iif(BusinesUnit=='#n/a',UnDefined,BusinesUnit),\n    //financelob=iif(isempty(FinanceLOB),UnDefined,FinanceLOB),\n    //IsApplication,\n    Source='Config'\n    //| extend AppCode2=UnDefined\n    | distinct Environment,application_name,application_name_2,busines_unit,budget_center_code,subscriptionId,resourceGroup,Source\n);\nlet TagandConfig = materialize(ResourceTag\n| union (\n    BillingData\n    | project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName\n    | distinct subscriptionId, resourceGroup,resourceName\n    | join kind=inner BillingConfigView on  $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n    | join kind=leftanti ResourceTag on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n    | project-away subscriptionId1, resourceGroup1\n));\nTagandConfig\n| union (\n    BillingData\n    | project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName\n    | distinct subscriptionId, resourceGroup,resourceName\n    | extend resourceGroup=iff(isempty(resourceGroup),System,resourceGroup)\n    | join kind=leftanti TagandConfig on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n    | project Environment=UnDefined,application_name=UnDefined,application_name_2=UnDefined,subscriptionId, resourceGroup,resourceName,Source='Usage'\n)\n| join kind=inner Subscription on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n| join kind=inner Subscription_RG on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n| join kind=inner SubscriptionName on $left.subscriptionId == $right.subscriptionId\n| join kind=leftouter LOB on $left.busines_unit==$right.FullName\n| project Environment=iff(isempty(Environment),UnDefined,Environment), application_name=iff(isempty(application_name),UnDefined,application_name),application_name_2=iff(isempty(application_name_2),UnDefined,application_name_2), \nPK_Subscription=tostring(PK_Subscription),PK_Subscription_RG=tostring(PK_Subscription_RG), resourceGroup, resourceName,subscriptionId, subscriptionName, billingAccountId, billingAccountName, accountName, \naccountOwnerId,Source,primary_app_owner,backup_app_owner,busines_unit=iff(isempty(busines_unit),UnDefined,busines_unit),budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags\n//| count",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "00:20:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "PBIQuery_Aggregated",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [
+                            {
+                                "activity": "ProductDetail",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace Billing_PBI <| \nlet UnDefined = 'undefined';\nlet System = 'system';\n//let EndOfLastWeek = startofweek(now());\nlet EndOfLastWeek = now();\nlet DateFilter = ago(2000d);\nlet Daytogroup = (_billingdate:datetime) {\n    let _endOfWeek = iif(dayofweek(_billingdate)==0d,_billingdate, todatetime(format_datetime(datetime_add('Day', 1, endofweek(_billingdate)),\"yyyy-MM-dd\")));\n    let _endOfWeekByMonth = iif(_endOfWeek > endofmonth(_billingdate),todatetime(format_datetime(endofmonth(_billingdate),\"yyyy-MM-dd\")),_endOfWeek);\n    _endOfWeekByMonth\n};\nlet BillingDataView = materialize(\nBillingConfig_Extended\n| join kind= inner (BillingData\n| where billingDate > DateFilter and billingDate <= EndOfLastWeek\n| extend subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName,product,location=resourceLocation,\nBillingDate_T = Daytogroup(billingDate)\n| project subscriptionId,resourceGroup,product,location,BillingDate_T,billingDate,chargeType, frequency,resourceId,cost,quantity, effectivePrice, resourceName,publisherType,partNumber\n) on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n| project subscriptionId,resourceGroup,product,location,BillingDate_T,billingDate,chargeType, frequency,resourceId,cost,quantity, effectivePrice, resourceName,publisherType,partNumber,PK_Subscription\n);\nProductDetail\n| join kind=inner BillingDataView\non $left.Product == $right.product and $left.partNumber == $right.partNumber\n| extend billingDate_W = iif(billingDate > startofmonth(ago(60d)),billingDate,iif(billingDate < endofmonth(ago(560d)),todatetime(format_datetime(endofmonth(billingDate),\"yyyy-MM-dd\")),BillingDate_T)), //up to 60 days daily, upto 560 days weekly rest monthly\nreservationId=iif(chargeType==\"purchase\" and frequency==\"recurring\", split(resourceId, '/')[4], \"\")\n| summarize hint.strategy = shuffle TotalCost = sum(cost), Quantity = sum(quantity), effectivePrice=avg(effectivePrice) by Region=location,  \n BillingDate = billingDate_W ,PK_Subscription,resourceName,publisherType,chargeType,reservationId, ProdID",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "02:00:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ProductDetail",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [
+                            {
+                                "activity": "Billing_Config_Extended",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace ProductDetail <| \nlet UnDefined = 'undefined';\nlet BillingDataView = materialize(\nBillingData\n| extend mde = parse_json(meterDetails)\n| project Product=product, partNumber, metername = tostring(mde.metername),\nMeterCategory=tostring(mde.metercategory),metersubcategory=tostring(mde.metersubcategory),\nunitofmeasure=tostring(mde.unitofmeasure),billingDate\n| distinct Product, partNumber, MeterCategory,metersubcategory,billingDate\n| summarize arg_max(billingDate, MeterCategory,metersubcategory) by Product, partNumber\n| sort by Product, partNumber asc\n| extend ProdID=row_number()\n| project Product,partNumber,MeterCategory,ProdID,metersubcategory\n);\nProductMeterCategory\n| project IsPrePay,Product,FNGCategory,CostType\n| join kind=rightouter BillingDataView\non Product\n| extend MeterCategory=iif(isempty( MeterCategory),UnDefined,MeterCategory),\nFNGCategory=iif(isempty( FNGCategory),UnDefined,FNGCategory),\nCostType = iif(isempty(CostType),UnDefined,CostType),\nIsPrePay=iif(isnull(IsPrePay),false, IsPrePay),Product=Product1\n| distinct Product,partNumber,IsPrePay,MeterCategory,metersubcategory,FNGCategory,CostType\n| sort by Product, partNumber asc\n| extend ProdID=row_number()\n| project Product,partNumber,NonReserved=IsPrePay,MeterCategory,FNGCategory,CostType,ProdID,metersubcategory",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "00:20:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Billing"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-03-25T08:48:52Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RefershPBITable_Backup_03212023')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Billing_Config_Extended",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace BillingConfig_Extended <|  \nlet UnDefined = 'undefined';\nlet System = 'system';\nlet Subscription = materialize(\nBillingData\n| project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName\n| distinct subscriptionId, resourceGroup,resourceName\n| sort by subscriptionId asc, resourceGroup asc,resourceName asc\n| extend PK_Subscription= row_number()\n| project subscriptionId, resourceGroup,resourceName,PK_Subscription //,PK_Subscription_RG\n);\nlet Subscription_RG = materialize(\nBillingData\n| project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup)\n| distinct subscriptionId, resourceGroup\n| sort by subscriptionId asc, resourceGroup asc\n| extend PK_Subscription_RG= row_number()\n| project subscriptionId, resourceGroup,PK_Subscription_RG\n);\nlet SubscriptionName = materialize(BillingData \n| summarize arg_max(billingDate,subscriptionName, billingAccountId, billingAccountName, accountName, accountOwnerId) by subscriptionId \n| project-away billingDate);\nlet ResourceTag = materialize (BillingData\n| where billingDate > ago(180d)\n| where isnotempty(tags)\n| extend RGFQN = strcat(subscriptionId,'/',resourceGroup,'/',resourceName)\n| summarize arg_max(billingDate, subscriptionId, resourceGroup,resourceName) by RGFQN, tags\n| extend tag = parse_json(tags)\n| project RGFQN,subscriptionId, resourceGroup,resourceName,environment=tostring(coalesce(tag.env,tag.environment)),application_name=tostring(coalesce(tag.app1,tag.application)), application_name_2=tostring(tag.app2),primary_app_owner=tostring(tag.owner1),backup_app_owner=tostring(tag.owner2),busines_unit=tostring(tag.bu),budget_center_code=tostring(tag.bc),public_or_private=tostring(tag.public),creator_name=tostring(tag.createdby),ticket_number=tostring(tag.requestid),date_created=tostring(tag.datecreated),expiraton_date=tostring(tag.expiratondate),billingDate,tags\n//| extend appcodeparsed=split(appcode, '|')[0]\n//| extend appcode=tolong(appcodeparsed), parent_hostingid=toreal(parent_hostingid), lineofbusiness=toint(lineofbusiness)//, financelob=toint(financelob) \n//| project-away appcodeparsed\n//| extend lineofbusiness=tostring(lineofbusiness), financelob=tostring(financelob)\n//| extend financelob=iif(isempty(financelob),UnDefined,financelob)\n//| where isnotempty(lineofbusiness)\n| summarize Max_BillingDate=max(billingDate) by RGFQN,subscriptionId, resourceGroup,resourceName,environment,application_name,application_name_2,primary_app_owner,backup_app_owner,busines_unit,budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags\n//costcenter, servicetowerid, appcode,appcode_2, appid, parent_hostingid,lineofbusiness,financelob,subscriptionId, resourceGroup,resourceName,RGFQN,businessservice, clientservice,resourceretention,ritm,requestor_email,creator_name,subnet,subnet2,subnet3,subnet4,subnetaks,subnetapim,subnetag,subnetalb,subnetams,tags\n| sort by RGFQN, Max_BillingDate, subscriptionId, resourceGroup,resourceName,environment,application_name,application_name_2,primary_app_owner,backup_app_owner,busines_unit,budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags desc\n//| sort by RGFQN, Max_BillingDate, lineofbusiness, appcode,appcode_2, appid, parent_hostingid, servicetowerid, costcenter,financelob,businessservice, clientservice,resourceretention,ritm,requestor_email,creator_name,subnet,subnet2,subnet3,subnet4,subnetaks,subnetapim,subnetag,subnetalb,subnetams,tags desc\n| extend Rank=row_number(1, prev(RGFQN) != RGFQN)\n| where Rank ==  1\n//| join kind=leftouter HostingLKP_Ram on $left.parent_hostingid == $right.ParentHostingSubHostingID\n| join kind=leftouter LOB on $left.busines_unit==$right.FullName\n| project Environment=tolower(environment),subscriptionId, resourceGroup,resourceName,environment,application_name,application_name_2,primary_app_owner,backup_app_owner,busines_unit,budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags,source = 'ResourceTag'\n//, AppCode = tostring(appcode),AppCode2 = tostring(appcode_2), AppName = appid, LineOfBusiness = ShortName, IsApplication = iif(isnotempty(servicetowerid),false, true),\n//costcenter, servicetowerid,subscriptionId, resourceGroup,resourceName,financelob,businessservice, clientservice,resourceretention,ritm,requestor_email,creator_name,subnet,subnet2,subnet3,subnet4,subnetaks,subnetapim,subnetag,subnetalb,subnetams,tags,Source = 'ResourceTag'\n);\n//let BillingConfigView = materialize(\n    //BillingConfig\n    //| project subscriptionId=tostring(SubscriptionGuid), \n    //Environment= iif(isempty(HostingService),UnDefined,HostingService),\n    //AppCode = iif(isempty(AppCode1),UnDefined,AppCode1),\n    //AppName = iif(isempty(AppName),UnDefined,AppName),\n    //resourceGroup=iff(isempty(ResourceGroupName),System, ResourceGroupName),\n    //LineOfBusiness=iif(LineOfBusiness=='#n/a',UnDefined,LineOfBusiness),\n    //financelob=iif(isempty(FinanceLOB),UnDefined,FinanceLOB),\n    //IsApplication,\n    //Source=\"Config\"\n    //| extend AppCode2=UnDefined\n    //| distinct Environment,AppCode,AppCode2,AppName,LineOfBusiness,IsApplication,subscriptionId,resourceGroup,financelob,Source\n//);\n//let TagandConfig = materialize(ResourceTag\n//| union (\n    //BillingData\n    //| project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName\n    //| distinct subscriptionId, resourceGroup,resourceName\n    //| join kind=inner BillingConfigView on  $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n    //| join kind=leftanti ResourceTag on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n    //| project-away subscriptionId1, resourceGroup1\n//));\nResourceTag\n| union (\n    BillingData\n    | project subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName\n    | distinct subscriptionId, resourceGroup,resourceName\n    | extend resourceGroup=iff(isempty(resourceGroup),System,resourceGroup)\n    | join kind=leftanti ResourceTag on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n    | project Environment=UnDefined,application_name=UnDefined,application_name_2=UnDefined,subscriptionId, resourceGroup,resourceName,Source='Usage'\n)\n| join kind=inner Subscription on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n| join kind=inner Subscription_RG on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup\n| join kind=inner SubscriptionName on $left.subscriptionId == $right.subscriptionId\n| join kind=leftouter LOB on $left.busines_unit==$right.FullName\n| project Environment=iff(isempty(Environment),UnDefined,Environment), application_name=iff(isempty(application_name),UnDefined,application_name),application_name_2=iff(isempty(application_name_2),UnDefined,application_name_2), \nPK_Subscription=tostring(PK_Subscription),PK_Subscription_RG=tostring(PK_Subscription_RG), resourceGroup, resourceName,subscriptionId, subscriptionName, billingAccountId, billingAccountName, accountName, \naccountOwnerId,Source,primary_app_owner,backup_app_owner,busines_unit=iff(isempty(busines_unit),UnDefined,busines_unit),budget_center_code,public_or_private,creator_name,ticket_number,date_created,expiraton_date,tags\n//| count",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "00:20:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "PBIQuery_Aggregated",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [
+                            {
+                                "activity": "ProductDetail",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace Billing_PBI <| \nlet UnDefined = 'undefined';\nlet System = 'system';\n//let EndOfLastWeek = startofweek(now());\nlet EndOfLastWeek = now();\nlet DateFilter = ago(2000d);\nlet Daytogroup = (_billingdate:datetime) {\n    let _endOfWeek = iif(dayofweek(_billingdate)==0d,_billingdate, todatetime(format_datetime(datetime_add('Day', 1, endofweek(_billingdate)),\"yyyy-MM-dd\")));\n    let _endOfWeekByMonth = iif(_endOfWeek > endofmonth(_billingdate),todatetime(format_datetime(endofmonth(_billingdate),\"yyyy-MM-dd\")),_endOfWeek);\n    _endOfWeekByMonth\n};\nlet BillingDataView = materialize(\nBillingConfig_Extended\n| join kind= inner (BillingData\n| where billingDate > DateFilter and billingDate <= EndOfLastWeek\n| extend subscriptionId, resourceGroup = iff(isempty(resourceGroup),System,resourceGroup),resourceName,product,location=resourceLocation,\nBillingDate_T = Daytogroup(billingDate)\n| project subscriptionId,resourceGroup,product,location,BillingDate_T,billingDate,chargeType, frequency,resourceId,cost,quantity, effectivePrice, resourceName,publisherType,partNumber\n) on $left.subscriptionId == $right.subscriptionId and $left.resourceGroup == $right.resourceGroup and $left.resourceName == $right.resourceName\n| project subscriptionId,resourceGroup,product,location,BillingDate_T,billingDate,chargeType, frequency,resourceId,cost,quantity, effectivePrice, resourceName,publisherType,partNumber,PK_Subscription\n);\nProductDetail\n| join kind=inner BillingDataView\non $left.Product == $right.product and $left.partNumber == $right.partNumber\n| extend billingDate_W = iif(billingDate > startofmonth(ago(60d)),billingDate,iif(billingDate < endofmonth(ago(560d)),todatetime(format_datetime(endofmonth(billingDate),\"yyyy-MM-dd\")),BillingDate_T)), //up to 60 days daily, upto 560 days weekly rest monthly\nreservationId=iif(chargeType==\"purchase\" and frequency==\"recurring\", split(resourceId, '/')[4], \"\")\n| summarize hint.strategy = shuffle TotalCost = sum(cost), Quantity = sum(quantity), effectivePrice=avg(effectivePrice) by Region=location,  \n BillingDate = billingDate_W ,PK_Subscription,resourceName,publisherType,chargeType,reservationId, ProdID",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "02:00:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    },
+                    {
+                        "name": "ProductDetail",
+                        "type": "AzureDataExplorerCommand",
+                        "dependsOn": [
+                            {
+                                "activity": "Billing_Config_Extended",
+                                "dependencyConditions": [
+                                    "Succeeded"
+                                ]
+                            }
+                        ],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [],
+                        "typeProperties": {
+                            "command": {
+                                "value": ".set-or-replace ProductDetail <| \nlet UnDefined = 'undefined';\nlet BillingDataView = materialize(\nBillingData\n| extend mde = parse_json(meterDetails)\n| project Product=product, partNumber, metername = tostring(mde.metername),\nMeterCategory=tostring(mde.metercategory),metersubcategory=tostring(mde.metersubcategory),\nunitofmeasure=tostring(mde.unitofmeasure),billingDate\n| distinct Product, partNumber, MeterCategory,metersubcategory,billingDate\n| summarize arg_max(billingDate, MeterCategory,metersubcategory) by Product, partNumber\n| sort by Product, partNumber asc\n| extend ProdID=row_number()\n| project Product,partNumber,MeterCategory,ProdID,metersubcategory\n);\nProductMeterCategory\n| project IsPrePay,Product,FNGCategory,CostType\n| join kind=rightouter BillingDataView\non Product\n| extend MeterCategory=iif(isempty( MeterCategory),UnDefined,MeterCategory),\nFNGCategory=iif(isempty( FNGCategory),UnDefined,FNGCategory),\nCostType = iif(isempty(CostType),UnDefined,CostType),\nIsPrePay=iif(isnull(IsPrePay),false, IsPrePay),Product=Product1\n| distinct Product,partNumber,IsPrePay,MeterCategory,metersubcategory,FNGCategory,CostType\n| sort by Product, partNumber asc\n| extend ProdID=row_number()\n| project Product,partNumber,NonReserved=IsPrePay,MeterCategory,FNGCategory,CostType,ProdID,metersubcategory",
+                                "type": "Expression"
+                            },
+                            "commandTimeout": "00:20:00"
+                        },
+                        "linkedServiceName": {
+                            "referenceName": "AzureDataExplorer_ACTSADX01_CostManagement",
+                            "type": "LinkedServiceReference"
+                        }
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Billing"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-03-21T13:01:10Z"
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dataflowFlattenJson_Credit')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "ReadJsonFile"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "CSVText",
+                                "type": "DatasetReference"
+                            },
+                            "name": "OutputcsvFile"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "FlattenJson"
+                        }
+                    ],
+                    "script": "parameters{\n\tcontainer as string,\n\tdirectory as string,\n\tfilename as string\n}\nsource(output(\n\t\tadjustmentDetails as (name as string, value as double)[],\n\t\tadjustments as double,\n\t\tazureMarketplaceServiceCharges as double,\n\t\tbalanceDeduct as double,\n\t\tbeginningBalance as double,\n\t\tbillingPeriodEnd as date,\n\t\tbillingPeriodId as integer,\n\t\tbillingPeriodStart as date,\n\t\tchargesBilledSeparately as double,\n\t\tcurrencyCode as string,\n\t\tendingBalance as double,\n\t\tid as string,\n\t\tnewPurchases as double,\n\t\tnewPurchasesDetails as string,\n\t\tserviceOverage as double,\n\t\ttotalOverage as double,\n\t\ttotalUsage as double,\n\t\tutilized as double\n\t),\n\tuseSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'json',\n\tfileSystem: ($container),\n\tfolderPath: (concat($directory, '/json')),\n\tfileName: (concat($filename, '.json')),\n\tdocumentForm: 'documentPerLine') ~> ReadJsonFile\nReadJsonFile foldDown(unroll(adjustmentDetails),\n\tmapColumn(\n\t\tname = adjustmentDetails.name,\n\t\tvalue = adjustmentDetails.value,\n\t\tid,\n\t\tbillingPeriodId,\n\t\tcurrencyCode,\n\t\tbeginningBalance,\n\t\tendingBalance,\n\t\tnewPurchases,\n\t\tadjustments,\n\t\tutilized,\n\t\tserviceOverage,\n\t\tchargesBilledSeparately,\n\t\ttotalOverage,\n\t\ttotalUsage,\n\t\tazureMarketplaceServiceCharges,\n\t\tbillingPeriodStart,\n\t\tbillingPeriodEnd,\n\t\tbalanceDeduct\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> FlattenJson\nFlattenJson sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename, '.csv'))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> OutputcsvFile"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/dataflowFlattenJSON')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "dataset": {
+                                "referenceName": "VMMetricsJSON_v3",
+                                "type": "DatasetReference"
+                            },
+                            "name": "jsonFile"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "dataset": {
+                                "referenceName": "VMMetricsCSV",
+                                "type": "DatasetReference"
+                            },
+                            "name": "sinkCSVFile"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "FlattenJSONFile"
+                        }
+                    ],
+                    "script": "parameters{\n\tsource_dirname as string,\n\tfilename as string,\n\tsink_dirname as string\n}\nsource(output(\n\t\tcost as boolean,\n\t\tinterval as string,\n\t\tnamespace as string,\n\t\tresourceregion as string,\n\t\ttimespan as string,\n\t\tvalue as (displayDescription as string, errorCode as string, id as string, name as (localizedValue as string, value as string), timeseries as (data as (average as double, timeStamp as string)[], metadatavalues as string[])[], type as string, unit as string)[]\n\t),\n\tallowSchemaDrift: false,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tdocumentForm: 'documentPerLine',\n\twildcardPaths:[(concat($source_dirname, \"/*.*\" )\n)]) ~> jsonFile\njsonFile foldDown(unroll(value.timeseries.data),\n\tmapColumn(\n\t\tcost,\n\t\tinterval,\n\t\tnamespace,\n\t\tresourceregion,\n\t\ttimespan,\n\t\tdisplayDescription = value.displayDescription,\n\t\terrorCode = value.errorCode,\n\t\tid = value.id,\n\t\tname = value.name.localizedValue,\n\t\tvalue = value.name.value,\n\t\taverage = value.timeseries.data.average,\n\t\ttimeStamp = value.timeseries.data.timeStamp,\n\t\ttype = value.type,\n\t\tunit = value.unit\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> FlattenJSONFile\nFlattenJSONFile sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tpartitionFileNames:[(concat($filename))],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tsaveOrder: 1,\n\tpartitionBy('hash', 1)) ~> sinkCSVFile"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RetailPrices')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RetailPrices",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_relativeURL": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {},
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SFTP_ExcelSource')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "SFTP",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string",
+                        "defaultValue": "azure-cost-metric-data/referencedata"
+                    },
+                    "FileName": {
+                        "type": "string",
+                        "defaultValue": "ITSMOCostMapping.xlsx"
+                    },
+                    "WorkSheetName": {
+                        "type": "string",
+                        "defaultValue": "LOBLookUp"
+                    }
+                },
+                "folder": {
+                    "name": "FNFI_Billing"
+                },
+                "annotations": [],
+                "type": "Excel",
+                "typeProperties": {
+                    "sheetName": {
+                        "value": "@dataset().WorkSheetName",
+                        "type": "Expression"
+                    },
+                    "location": {
+                        "type": "SftpLocation",
+                        "fileName": {
+                            "value": "@dataset().FileName",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "firstRowAsHeader": true
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RestResource_BillingData')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "Restsvc_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_RelativeURL": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().p_RelativeURL",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SFTP_CSVText_referencedata')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "SFTP",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "Container": {
+                        "type": "string"
+                    },
+                    "directory": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "FNFI_Billing"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "SftpLocation",
+                        "fileName": {
+                            "value": "@dataset().directory",
+                            "type": "Expression"
+                        },
+                        "folderPath": {
+                            "value": "@dataset().Container",
+                            "type": "Expression"
+                        }
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\"",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/MetricsData')]",
+            "type": "Microsoft.DataFactory/factories/pipelines",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "activities": [
+                    {
+                        "name": "Copy_MetricsData_From_Dev",
+                        "type": "Copy",
+                        "dependsOn": [],
+                        "policy": {
+                            "timeout": "7.00:00:00",
+                            "retry": 0,
+                            "retryIntervalInSeconds": 30,
+                            "secureOutput": false,
+                            "secureInput": false
+                        },
+                        "userProperties": [
+                            {
+                                "name": "Source",
+                                "value": "metricsdata//"
+                            },
+                            {
+                                "name": "Destination",
+                                "value": "metricsdata//"
+                            }
+                        ],
+                        "typeProperties": {
+                            "source": {
+                                "type": "BinarySource",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSReadSettings",
+                                    "recursive": true,
+                                    "wildcardFileName": "*"
+                                },
+                                "formatSettings": {
+                                    "type": "BinaryReadSettings"
+                                }
+                            },
+                            "sink": {
+                                "type": "BinarySink",
+                                "storeSettings": {
+                                    "type": "AzureBlobFSWriteSettings"
+                                }
+                            },
+                            "enableStaging": false,
+                            "enableSkipIncompatibleRow": false,
+                            "skipErrorFile": {
+                                "fileMissing": true
+                            },
+                            "validateDataConsistency": false
+                        },
+                        "inputs": [
+                            {
+                                "referenceName": "DevDataSet_DataCopy",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": "metricsdata"
+                                }
+                            }
+                        ],
+                        "outputs": [
+                            {
+                                "referenceName": "DestinationDataset_DataCopy",
+                                "type": "DatasetReference",
+                                "parameters": {
+                                    "container": "metricsdata"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "policy": {
+                    "elapsedTimeMetric": {}
+                },
+                "folder": {
+                    "name": "Initial Setup"
+                },
+                "annotations": [],
+                "lastPublishTime": "2024-01-05T11:08:27Z"
+            },
+            "dependsOn": []
+        }
+    ]
+}

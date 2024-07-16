@@ -1,0 +1,726 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "fng-dtf-acrp-dev"
+        },
+        "RestService_CostManagement_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://management.azure.com"
+        },
+        "AzureDataLakeStorage_actsadlsg2_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://fngsaacrpdev.dfs.core.windows.net"
+        },
+        "ISFRatio_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://isfratio.blob.core.windows.net/"
+        },
+        "RestResource_BillingSummary_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://consumption.azure.com/"
+        },
+        "AzureKeyVault1_properties_typeProperties_baseUrl": {
+            "type": "string",
+            "defaultValue": "https://kv-acrp-dev.vault.azure.net/"
+        },
+        "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_endpoint": {
+            "type": "string",
+            "defaultValue": "https://fngadxacrpdev.eastus2.kusto.windows.net"
+        },
+        "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CostAnalysis"
+        },
+        "Dev_OR_SandBox_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://fngsaacrpdev.dfs.core.windows.net"
+        },
+        "SFTP_properties_typeProperties_host": {
+            "type": "string",
+            "defaultValue": "filetransfer.fnf.com"
+        },
+        "SFTP_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "azcostrep-np-sftp"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://management.azure.com"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "11fcdb21-0cd8-43f0-99cf-849ffedc9a3b"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "2129e8df-927d-4b1f-a761-d556b735c8c0"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_aadResourceId": {
+            "type": "string",
+            "defaultValue": "https://management.azure.com"
+        },
+        "RetailPrices_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://prices.azure.com/api/retail/prices"
+        },
+        "RetailPrices_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "11fcdb21-0cd8-43f0-99cf-849ffedc9a3b"
+        },
+        "RetailPrices_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "2129e8df-927d-4b1f-a761-d556b735c8c0"
+        },
+        "RetailPrices_properties_typeProperties_aadResourceId": {
+            "type": "string",
+            "defaultValue": "https://prices.azure.com/api/retail/prices"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "[concat(parameters('factoryName'), '/RestService_CostManagement')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "RestService",
+                "typeProperties": {
+                    "url": "[parameters('RestService_CostManagement_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureDataLakeStorage_actsadlsg2')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('AzureDataLakeStorage_actsadlsg2_properties_typeProperties_url')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/ISFRatio')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "HttpServer",
+                "typeProperties": {
+                    "url": "[parameters('ISFRatio_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RestResource_BillingSummary')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "RestService",
+                "typeProperties": {
+                    "url": "[parameters('RestResource_BillingSummary_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "Anonymous"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureKeyVault",
+                "typeProperties": {
+                    "baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/AzureDataExplorer_ACTSADX01_CostManagement')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureDataExplorer",
+                "typeProperties": {
+                    "endpoint": "[parameters('AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_endpoint')]",
+                    "database": "[parameters('AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_database')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Dev_OR_SandBox')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "AzureBlobFS",
+                "typeProperties": {
+                    "url": "[parameters('Dev_OR_SandBox_properties_typeProperties_url')]"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SFTP')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "GlobalScapeSFTP",
+                "annotations": [],
+                "type": "Sftp",
+                "typeProperties": {
+                    "host": "[parameters('SFTP_properties_typeProperties_host')]",
+                    "port": 22,
+                    "skipHostKeyValidation": true,
+                    "authenticationType": "Basic",
+                    "userName": "[parameters('SFTP_properties_typeProperties_userName')]",
+                    "password": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVault1",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "azcostrep-np-sftp"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Restsvc_CostManagement')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "annotations": [],
+                "type": "RestService",
+                "typeProperties": {
+                    "url": "[parameters('Restsvc_CostManagement_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "AadServicePrincipal",
+                    "servicePrincipalId": "[parameters('Restsvc_CostManagement_properties_typeProperties_servicePrincipalId')]",
+                    "servicePrincipalKey": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVault1",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "CostMGMT-SPN-Secret"
+                    },
+                    "tenant": "[parameters('Restsvc_CostManagement_properties_typeProperties_tenant')]",
+                    "aadResourceId": "[parameters('Restsvc_CostManagement_properties_typeProperties_aadResourceId')]"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RetailPrices')]",
+            "type": "Microsoft.DataFactory/factories/linkedServices",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "description": "RetailPrices",
+                "annotations": [],
+                "type": "RestService",
+                "typeProperties": {
+                    "url": "[parameters('RetailPrices_properties_typeProperties_url')]",
+                    "enableServerCertificateValidation": true,
+                    "authenticationType": "AadServicePrincipal",
+                    "servicePrincipalId": "[parameters('RetailPrices_properties_typeProperties_servicePrincipalId')]",
+                    "servicePrincipalKey": {
+                        "type": "AzureKeyVaultSecret",
+                        "store": {
+                            "referenceName": "AzureKeyVault1",
+                            "type": "LinkedServiceReference"
+                        },
+                        "secretName": "CostMGMT-SPN-Secret"
+                    },
+                    "tenant": "[parameters('RetailPrices_properties_typeProperties_tenant')]",
+                    "aadResourceId": "[parameters('RetailPrices_properties_typeProperties_aadResourceId')]"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureKeyVault1')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/JsonToCSV - ForeCast_AmortizedCost')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "ReadJsonFiles"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "OutputToCSV"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "FlattenJson"
+                        },
+                        {
+                            "name": "CreateColumnsFromArray"
+                        },
+                        {
+                            "name": "RemoveProperties"
+                        }
+                    ],
+                    "script": "parameters{\n\tcontainer as string,\n\tdirectory as string,\n\tfilename as string,\n\tJsonFolder as string,\n\tCsvFolder as string\n}\nsource(output(\n\t\tResourceGroup as string,\n\t\tSubscriptionID as string,\n\t\teTag as string,\n\t\tid as string,\n\t\tlocation as string,\n\t\tname as string,\n\t\tproperties as (columns as (name as string, type as string)[], nextLink as string, rows as string[][]),\n\t\ttype as string\n\t),\n\tuseSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'json',\n\tfileSystem: ($container),\n\tdocumentForm: 'documentPerLine',\n\twildcardPaths:[(concat(concat(concat($directory,'/'),$JsonFolder),concat('/',$filename)))]) ~> ReadJsonFiles\nReadJsonFiles foldDown(unroll(properties.rows),\n\tmapColumn(\n\t\tResourceGroup,\n\t\tSubscriptionID,\n\t\tproperties = properties.rows\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> FlattenJson\nFlattenJson derive(Cost = at(properties,1),\n\t\tUsageDate = at(properties,2),\n\t\tCostStatus = at(properties,3),\n\t\tCurrency = at(properties,4)) ~> CreateColumnsFromArray\nCreateColumnsFromArray select(mapColumn(\n\t\tResourceGroup,\n\t\tSubscriptionID,\n\t\tCost,\n\t\tUsageDate,\n\t\tCostStatus,\n\t\tCurrency\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveProperties\nRemoveProperties sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tfileSystem: ($container),\n\tfolderPath: (concat(concat($directory,'/'),$CsvFolder)),\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\tpartitionFileNames:['forecast.csv'],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> OutputToCSV"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_actsadlsg2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SplitFilesByDay - Reservation')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "DataLakeSource"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "WriteMultipleFiles"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "CreateFileNameForSplitting"
+                        }
+                    ],
+                    "script": "parameters{\n\tContainer as string,\n\tSourceFileName as string,\n\tSubFolder as string\n}\nsource(output(\n\t\tid as string,\n\t\tname as string,\n\t\ttype as string,\n\t\treservationOrderId as string,\n\t\treservationId as string,\n\t\tskuName as string,\n\t\tkind as string,\n\t\treservedHours as string,\n\t\tusageDate as string,\n\t\tusedHours as string,\n\t\tminUtilizationPercentage as string,\n\t\tavgUtilizationPercentage as string,\n\t\tmaxUtilizationPercentage as string,\n\t\tpurchasedQuantity as string,\n\t\tremainingQuantity as string,\n\t\ttotalReservedQuantity as string,\n\t\tusedQuantity as string,\n\t\tutilizedPercentage as string\n\t),\n\tuseSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: ($Container),\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\twildcardPaths:[($SourceFileName)]) ~> DataLakeSource\nDataLakeSource derive(filename = substring(toString(toDate(usageDate)),1,4)+'/'+substring(toString(toDate(usageDate)),6,2)+'/'+substring(toString(toDate(usageDate)),9,2)+'/'+$SubFolder+'/Utilization_'+toString(toDate(usageDate))+'.csv') ~> CreateFileNameForSplitting\nCreateFileNameForSplitting sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tfileSystem: ($Container),\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\trowUrlColumn:'filename',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: []) ~> WriteMultipleFiles"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_actsadlsg2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/JsonToCSV - ForeCast')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "ReadJsonFiles"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "OutputToCSV"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "FlattenJson"
+                        },
+                        {
+                            "name": "CreateColumnsFromArray"
+                        },
+                        {
+                            "name": "RemoveProperties"
+                        }
+                    ],
+                    "script": "parameters{\n\tcontainer as string,\n\tdirectory as string,\n\tfilename as string,\n\tJsonFolder as string,\n\tCsvFolder as string\n}\nsource(output(\n\t\tResourceGroup as string,\n\t\tSubscriptionID as string,\n\t\teTag as string,\n\t\tid as string,\n\t\tlocation as string,\n\t\tname as string,\n\t\tproperties as (columns as (name as string, type as string)[], nextLink as string, rows as string[][]),\n\t\ttype as string\n\t),\n\tuseSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'json',\n\tfileSystem: ($container),\n\tdocumentForm: 'documentPerLine',\n\twildcardPaths:[(concat(concat(concat($directory,'/'),$JsonFolder),concat('/',$filename)))]) ~> ReadJsonFiles\nReadJsonFiles foldDown(unroll(properties.rows),\n\tmapColumn(\n\t\tResourceGroup,\n\t\tSubscriptionID,\n\t\tproperties = properties.rows\n\t),\n\tskipDuplicateMapInputs: false,\n\tskipDuplicateMapOutputs: false) ~> FlattenJson\nFlattenJson derive(Cost = at(properties,1),\n\t\tUsageDate = at(properties,2),\n\t\tCostStatus = at(properties,3),\n\t\tCurrency = at(properties,4)) ~> CreateColumnsFromArray\nCreateColumnsFromArray select(mapColumn(\n\t\tResourceGroup,\n\t\tSubscriptionID,\n\t\tCost,\n\t\tUsageDate,\n\t\tCostStatus,\n\t\tCurrency\n\t),\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true) ~> RemoveProperties\nRemoveProperties sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tfileSystem: ($container),\n\tfolderPath: (concat(concat($directory,'/'),$CsvFolder)),\n\tcolumnDelimiter: ',',\n\tescapeChar: '\\\\',\n\tquoteChar: '\\\"',\n\tcolumnNamesAsHeader: true,\n\tpartitionFileNames:['forecast.csv'],\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: [],\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\tpartitionBy('hash', 1)) ~> OutputToCSV"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_actsadlsg2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SplitFilesByDay - Usage')]",
+            "type": "Microsoft.DataFactory/factories/dataflows",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "type": "MappingDataFlow",
+                "typeProperties": {
+                    "sources": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "DataLakeSource"
+                        }
+                    ],
+                    "sinks": [
+                        {
+                            "linkedService": {
+                                "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                                "type": "LinkedServiceReference"
+                            },
+                            "name": "WriteMultipleFiles"
+                        }
+                    ],
+                    "transformations": [
+                        {
+                            "name": "CreateFileNameForSplitting"
+                        }
+                    ],
+                    "script": "parameters{\n\tContainer as string,\n\tSourceFileName as string,\n\tUsageFolderName as string\n}\nsource(output(\n\t\tkind as string,\n\t\tid as string,\n\t\tname as string,\n\t\ttype as string,\n\t\tbillingAccountId as string,\n\t\tbillingAccountName as string,\n\t\tbillingPeriodStartDate as string,\n\t\tbillingPeriodEndDate as string,\n\t\tbillingProfileId as string,\n\t\tbillingProfileName as string,\n\t\taccountOwnerId as string,\n\t\taccountName as string,\n\t\tsubscriptionId as string,\n\t\tsubscriptionName as string,\n\t\tdate as string,\n\t\tproduct as string,\n\t\tpartNumber as string,\n\t\tmeterId as string,\n\t\tquantity as string,\n\t\teffectivePrice as string,\n\t\tcost as string,\n\t\tunitPrice as string,\n\t\tbillingCurrency as string,\n\t\tresourceLocation as string,\n\t\tconsumedService as string,\n\t\tresourceId as string,\n\t\tresourceName as string,\n\t\tinvoiceSection as string,\n\t\tresourceGroup as string,\n\t\tofferId as string,\n\t\tisAzureCreditEligible as string,\n\t\tpublisherType as string,\n\t\tchargeType as string,\n\t\tfrequency as string,\n\t\tmeterDetails as string\n\t),\n\tuseSchema: false,\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false,\n\tformat: 'delimited',\n\tfileSystem: ($Container),\n\tcolumnDelimiter: '\\t',\n\tescapeChar: '\\\\',\n\tquoteChar: '',\n\tcolumnNamesAsHeader: true,\n\twildcardPaths:[($SourceFileName)]) ~> DataLakeSource\nDataLakeSource derive(filename = substring(toString(toDate(date)),1,4)+'/'+substring(toString(toDate(date)),6,2)+'/'+substring(toString(toDate(date)),9,2)+'/'+$UsageFolderName+'/'+lower(billingAccountId)+'_usage.tsv') ~> CreateFileNameForSplitting\nCreateFileNameForSplitting sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'delimited',\n\tfileSystem: ($Container),\n\tcolumnDelimiter: '\\t',\n\tescapeChar: '\\\\',\n\tquoteChar: '',\n\tcolumnNamesAsHeader: true,\n\trowUrlColumn:'filename',\n\tumask: 0022,\n\tpreCommands: [],\n\tpostCommands: []) ~> WriteMultipleFiles"
+                }
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_actsadlsg2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RestResource_VMMetrics_v2')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RestService_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_RelativeURL": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().p_RelativeURL",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/RestService_CostManagement')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/Flex_ISFRatio')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "ISFRatio",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "HttpServerLocation",
+                        "relativeUrl": "isfratio/ISFRatio.csv"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/ISFRatio')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/APISubscriptionListCSV')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": "APISubscriptionListCSV.csv",
+                        "folderPath": "VM",
+                        "fileSystem": "config"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "name": "name",
+                        "type": "String"
+                    },
+                    {
+                        "name": "id",
+                        "type": "String"
+                    },
+                    {
+                        "name": "type",
+                        "type": "String"
+                    },
+                    {
+                        "name": "location",
+                        "type": "String"
+                    },
+                    {
+                        "name": "vmId",
+                        "type": "String"
+                    },
+                    {
+                        "name": "resourceId",
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_actsadlsg2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/SubscriptionTags')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "AzureDataLakeStorage_actsadlsg2",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "filename": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "Billing DS"
+                },
+                "annotations": [],
+                "type": "DelimitedText",
+                "typeProperties": {
+                    "location": {
+                        "type": "AzureBlobFSLocation",
+                        "fileName": {
+                            "value": "@dataset().filename",
+                            "type": "Expression"
+                        },
+                        "fileSystem": "referencedata"
+                    },
+                    "columnDelimiter": ",",
+                    "escapeChar": "\\",
+                    "firstRowAsHeader": true,
+                    "quoteChar": "\""
+                },
+                "schema": [
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    },
+                    {
+                        "type": "String"
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/AzureDataLakeStorage_actsadlsg2')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RestResource_BillingSummary')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RestResource_BillingSummary",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "relativeurl": {
+                        "type": "string"
+                    }
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().relativeurl",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/RestResource_BillingSummary')]"
+            ]
+        },
+        {
+            "name": "[concat(parameters('factoryName'), '/RestResource_VMs')]",
+            "type": "Microsoft.DataFactory/factories/datasets",
+            "apiVersion": "2018-06-01",
+            "properties": {
+                "linkedServiceName": {
+                    "referenceName": "RestService_CostManagement",
+                    "type": "LinkedServiceReference"
+                },
+                "parameters": {
+                    "p_relativeURL": {
+                        "type": "string"
+                    }
+                },
+                "folder": {
+                    "name": "VM Metrics DS"
+                },
+                "annotations": [],
+                "type": "RestResource",
+                "typeProperties": {
+                    "relativeUrl": {
+                        "value": "@dataset().p_relativeURL",
+                        "type": "Expression"
+                    }
+                },
+                "schema": []
+            },
+            "dependsOn": [
+                "[concat(variables('factoryId'), '/linkedServices/RestService_CostManagement')]"
+            ]
+        }
+    ]
+}

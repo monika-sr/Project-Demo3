@@ -1,0 +1,362 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "factoryName": {
+            "type": "string",
+            "metadata": "Data Factory name",
+            "defaultValue": "fng-dtf-acrp-dev"
+        },
+        "RestService_CostManagement_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://management.azure.com"
+        },
+        "AzureDataLakeStorage_actsadlsg2_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://fngsaacrpdev.dfs.core.windows.net"
+        },
+        "ISFRatio_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://isfratio.blob.core.windows.net/"
+        },
+        "RestResource_BillingSummary_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://consumption.azure.com/"
+        },
+        "AzureKeyVault1_properties_typeProperties_baseUrl": {
+            "type": "string",
+            "defaultValue": "https://kv-acrp-dev.vault.azure.net/"
+        },
+        "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_endpoint": {
+            "type": "string",
+            "defaultValue": "https://fngadxacrpdev.eastus2.kusto.windows.net"
+        },
+        "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_database": {
+            "type": "string",
+            "defaultValue": "CostAnalysis"
+        },
+        "Dev_OR_SandBox_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://fngsaacrpdev.dfs.core.windows.net"
+        },
+        "SFTP_properties_typeProperties_host": {
+            "type": "string",
+            "defaultValue": "filetransfer.fnf.com"
+        },
+        "SFTP_properties_typeProperties_userName": {
+            "type": "string",
+            "defaultValue": "azcostrep-np-sftp"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://management.azure.com"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "11fcdb21-0cd8-43f0-99cf-849ffedc9a3b"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "2129e8df-927d-4b1f-a761-d556b735c8c0"
+        },
+        "Restsvc_CostManagement_properties_typeProperties_aadResourceId": {
+            "type": "string",
+            "defaultValue": "https://management.azure.com"
+        },
+        "RetailPrices_properties_typeProperties_url": {
+            "type": "string",
+            "defaultValue": "https://prices.azure.com/api/retail/prices"
+        },
+        "RetailPrices_properties_typeProperties_servicePrincipalId": {
+            "type": "string",
+            "defaultValue": "11fcdb21-0cd8-43f0-99cf-849ffedc9a3b"
+        },
+        "RetailPrices_properties_typeProperties_tenant": {
+            "type": "string",
+            "defaultValue": "2129e8df-927d-4b1f-a761-d556b735c8c0"
+        },
+        "RetailPrices_properties_typeProperties_aadResourceId": {
+            "type": "string",
+            "defaultValue": "https://prices.azure.com/api/retail/prices"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_LookBackInDay": {
+            "type": "string",
+            "defaultValue": "3"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_BillingIds": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "BillingID": "46132814",
+                    "KeyVaultURLForAPIKey": "https://kv-acrp-dev.vault.azure.net/secrets/APIKey-46132814/997864aa1b904061bd8a229e52b56ea4"
+                }
+            ]
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_containername": {
+            "type": "string",
+            "defaultValue": "azure-cost-metric-data"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_BeginDate": {
+            "type": "string",
+            "defaultValue": "NA"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_EndDate": {
+            "type": "string",
+            "defaultValue": "NA"
+        },
+        "Billing API - Monthly_properties_Billing API_parameters_p_BatchType": {
+            "type": "string",
+            "defaultValue": "Batch"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_LookBackInDay": {
+            "type": "string",
+            "defaultValue": "3"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_BillingIds": {
+            "type": "array",
+            "defaultValue": [
+                {
+                    "BillingID": "46132814",
+                    "KeyVaultURLForAPIKey": "https://kv-acrp-dev.vault.azure.net/secrets/APIKey-46132814/997864aa1b904061bd8a229e52b56ea4"
+                }
+            ]
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_containername": {
+            "type": "string",
+            "defaultValue": "azure-cost-metric-data"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_BeginDate": {
+            "type": "string",
+            "defaultValue": "NA"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_EndDate": {
+            "type": "string",
+            "defaultValue": "NA"
+        },
+        "Billing API - Daily_properties_Billing API_parameters_p_BatchType": {
+            "type": "string",
+            "defaultValue": "Daily"
+        },
+        "containerUri": {
+            "type": "string",
+            "metadata": "URI to storage account containing linked ARM templates"
+        },
+        "containerSasToken": {
+            "type": "string",
+            "metadata": "Sas token to storage account containing linked ARM templates"
+        }
+    },
+    "variables": {
+        "factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+    },
+    "resources": [
+        {
+            "name": "fng-dtf-acrp-dev_ArmTemplate_0",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "RestService_CostManagement_properties_typeProperties_url": {
+                        "value": "[parameters('RestService_CostManagement_properties_typeProperties_url')]"
+                    },
+                    "AzureDataLakeStorage_actsadlsg2_properties_typeProperties_url": {
+                        "value": "[parameters('AzureDataLakeStorage_actsadlsg2_properties_typeProperties_url')]"
+                    },
+                    "ISFRatio_properties_typeProperties_url": {
+                        "value": "[parameters('ISFRatio_properties_typeProperties_url')]"
+                    },
+                    "RestResource_BillingSummary_properties_typeProperties_url": {
+                        "value": "[parameters('RestResource_BillingSummary_properties_typeProperties_url')]"
+                    },
+                    "AzureKeyVault1_properties_typeProperties_baseUrl": {
+                        "value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+                    },
+                    "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_endpoint": {
+                        "value": "[parameters('AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_endpoint')]"
+                    },
+                    "AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_database": {
+                        "value": "[parameters('AzureDataExplorer_ACTSADX01_CostManagement_properties_typeProperties_database')]"
+                    },
+                    "Dev_OR_SandBox_properties_typeProperties_url": {
+                        "value": "[parameters('Dev_OR_SandBox_properties_typeProperties_url')]"
+                    },
+                    "SFTP_properties_typeProperties_host": {
+                        "value": "[parameters('SFTP_properties_typeProperties_host')]"
+                    },
+                    "SFTP_properties_typeProperties_userName": {
+                        "value": "[parameters('SFTP_properties_typeProperties_userName')]"
+                    },
+                    "Restsvc_CostManagement_properties_typeProperties_url": {
+                        "value": "[parameters('Restsvc_CostManagement_properties_typeProperties_url')]"
+                    },
+                    "Restsvc_CostManagement_properties_typeProperties_servicePrincipalId": {
+                        "value": "[parameters('Restsvc_CostManagement_properties_typeProperties_servicePrincipalId')]"
+                    },
+                    "Restsvc_CostManagement_properties_typeProperties_tenant": {
+                        "value": "[parameters('Restsvc_CostManagement_properties_typeProperties_tenant')]"
+                    },
+                    "Restsvc_CostManagement_properties_typeProperties_aadResourceId": {
+                        "value": "[parameters('Restsvc_CostManagement_properties_typeProperties_aadResourceId')]"
+                    },
+                    "RetailPrices_properties_typeProperties_url": {
+                        "value": "[parameters('RetailPrices_properties_typeProperties_url')]"
+                    },
+                    "RetailPrices_properties_typeProperties_servicePrincipalId": {
+                        "value": "[parameters('RetailPrices_properties_typeProperties_servicePrincipalId')]"
+                    },
+                    "RetailPrices_properties_typeProperties_tenant": {
+                        "value": "[parameters('RetailPrices_properties_typeProperties_tenant')]"
+                    },
+                    "RetailPrices_properties_typeProperties_aadResourceId": {
+                        "value": "[parameters('RetailPrices_properties_typeProperties_aadResourceId')]"
+                    }
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "name": "fng-dtf-acrp-dev_ArmTemplate_1",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'fng-dtf-acrp-dev_ArmTemplate_0')]"
+            ]
+        },
+        {
+            "name": "fng-dtf-acrp-dev_ArmTemplate_2",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'fng-dtf-acrp-dev_ArmTemplate_1')]"
+            ]
+        },
+        {
+            "name": "fng-dtf-acrp-dev_ArmTemplate_3",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_3.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'fng-dtf-acrp-dev_ArmTemplate_2')]"
+            ]
+        },
+        {
+            "name": "fng-dtf-acrp-dev_ArmTemplate_4",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_4.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'fng-dtf-acrp-dev_ArmTemplate_3')]"
+            ]
+        },
+        {
+            "name": "fng-dtf-acrp-dev_ArmTemplate_5",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2018-02-01",
+            "properties": {
+                "mode": "incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('containerUri'), '/ArmTemplate_5.json', parameters('containerSasToken'))]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "factoryName": {
+                        "value": "[parameters('factoryName')]"
+                    },
+                    "Billing API - Monthly_properties_Billing API_parameters_p_LookBackInDay": {
+                        "value": "[parameters('Billing API - Monthly_properties_Billing API_parameters_p_LookBackInDay')]"
+                    },
+                    "Billing API - Monthly_properties_Billing API_parameters_p_BillingIds": {
+                        "value": "[parameters('Billing API - Monthly_properties_Billing API_parameters_p_BillingIds')]"
+                    },
+                    "Billing API - Monthly_properties_Billing API_parameters_p_containername": {
+                        "value": "[parameters('Billing API - Monthly_properties_Billing API_parameters_p_containername')]"
+                    },
+                    "Billing API - Monthly_properties_Billing API_parameters_p_BeginDate": {
+                        "value": "[parameters('Billing API - Monthly_properties_Billing API_parameters_p_BeginDate')]"
+                    },
+                    "Billing API - Monthly_properties_Billing API_parameters_p_EndDate": {
+                        "value": "[parameters('Billing API - Monthly_properties_Billing API_parameters_p_EndDate')]"
+                    },
+                    "Billing API - Monthly_properties_Billing API_parameters_p_BatchType": {
+                        "value": "[parameters('Billing API - Monthly_properties_Billing API_parameters_p_BatchType')]"
+                    },
+                    "Billing API - Daily_properties_Billing API_parameters_p_LookBackInDay": {
+                        "value": "[parameters('Billing API - Daily_properties_Billing API_parameters_p_LookBackInDay')]"
+                    },
+                    "Billing API - Daily_properties_Billing API_parameters_p_BillingIds": {
+                        "value": "[parameters('Billing API - Daily_properties_Billing API_parameters_p_BillingIds')]"
+                    },
+                    "Billing API - Daily_properties_Billing API_parameters_p_containername": {
+                        "value": "[parameters('Billing API - Daily_properties_Billing API_parameters_p_containername')]"
+                    },
+                    "Billing API - Daily_properties_Billing API_parameters_p_BeginDate": {
+                        "value": "[parameters('Billing API - Daily_properties_Billing API_parameters_p_BeginDate')]"
+                    },
+                    "Billing API - Daily_properties_Billing API_parameters_p_EndDate": {
+                        "value": "[parameters('Billing API - Daily_properties_Billing API_parameters_p_EndDate')]"
+                    },
+                    "Billing API - Daily_properties_Billing API_parameters_p_BatchType": {
+                        "value": "[parameters('Billing API - Daily_properties_Billing API_parameters_p_BatchType')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/deployments', 'fng-dtf-acrp-dev_ArmTemplate_4')]"
+            ]
+        }
+    ]
+}
